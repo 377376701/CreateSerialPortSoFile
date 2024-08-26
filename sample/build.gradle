@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+def time() {
+    return new Date().format("yyyyMMdd_HH_mm", TimeZone.getDefault())
+}
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        applicationId "android.serialport.sample"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    signingConfigs {
+        config {
+            keyAlias 'mykey'
+            keyPassword 'q123456q'
+            storeFile file('../sample/src/main/key/debug.keystore')
+            storePassword 'q123456q'
+        }
+        release {
+            v1SigningEnabled false
+            v2SigningEnabled true
+            keyAlias 'mykey'
+            keyPassword 'q123456q'
+            storeFile file('../sample/src/main/key/debug.keystore')
+            storePassword 'q123456q'
+        }
+        debug {
+            keyAlias 'mykey'
+            keyPassword 'q123456q'
+            storeFile file('../sample/src/main/key/debug.keystore')
+            storePassword 'q123456q'
+        }
+    }
+
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            debuggable true
+//            jniDebuggable true
+//            renderscriptDebuggable true
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${defaultConfig.versionName}_${time()}.apk"
+                }
+            }
+
+        }
+
+        debug {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${defaultConfig.versionName}.apk"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    testImplementation 'junit:junit:4.13'
+    implementation project(':serialport')
+    //implementation 'com.licheedev:android-serialport:2.1.3'
+}
